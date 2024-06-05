@@ -28,6 +28,7 @@ class App(ctk.CTk):
 
         self.sep_value = StringVar(value=",")
         self.seq_value = IntVar(value=0)
+        self.uniterm_value = IntVar(value=0)
 
         def get_sep_value(canv):
             canv.create_text(200, 100, text=self.sep_value.get(), fill="black", font="Helvetica 14 bold")
@@ -37,11 +38,11 @@ class App(ctk.CTk):
 
         self.left_drawing_frame = DrawingFrame(master=self)
         self.left_drawing_frame.grid(row=0, column=1, sticky=ctk.NSEW)
-        self.left_drawing_frame.canvas.create_text(200, 20, text="Pierwszy uniterm", fill="black", font="Arial 14 bold")
+        self.left_drawing_frame.canvas.create_text(200, 20, text="Lewy uniterm", fill="black", font="Arial 14 bold")
 
         self.right_drawing_frame = DrawingFrame(master=self)
         self.right_drawing_frame.grid(row=0, column=2, sticky=ctk.NSEW)
-        self.right_drawing_frame.canvas.create_text(200, 20, text="Drugi uniterm", fill="black", font="Arial 14 bold")
+        self.right_drawing_frame.canvas.create_text(200, 20, text="Prawy uniterm", fill="black", font="Arial 14 bold")
 
         self.bottom_drawing_frame = DrawingFrame(master=self)
         self.bottom_drawing_frame.grid(row=1, column=1, columnspan=2, sticky=ctk.NSEW)
@@ -79,6 +80,20 @@ class App(ctk.CTk):
         self.sec_seq_choice = ctk.CTkRadioButton(master=self.seq_frame, text="eliminacja", value=1,
                                                  variable=self.seq_value)
         self.sec_seq_choice.pack(side=ctk.RIGHT)
+
+        self.uniterm_frame = ctk.CTkFrame(master=self.options_frame, fg_color="transparent")
+        self.uniterm_frame.pack(pady=10, side=ctk.TOP)
+
+        self.first_uniterm = ctk.CTkRadioButton(master=self.uniterm_frame, text="Lewy", variable=self.uniterm_value,
+                                                value=0)
+        self.first_uniterm.pack(side=ctk.LEFT)
+        self.second_uniterm = ctk.CTkRadioButton(master=self.uniterm_frame, text="Prawy", variable=self.uniterm_value,
+                                                 value=1, width=35)
+        self.second_uniterm.pack(side=ctk.RIGHT)
+
+        self.add_uniterm = ctk.CTkButton(master=self.options_frame, text="Dodaj uniterm",
+                                         command=lambda: print(self.first_param_input.get("0.0", "end")))
+        self.add_uniterm.pack(pady=10)
 
 
 def main():
