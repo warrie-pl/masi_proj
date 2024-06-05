@@ -29,6 +29,7 @@ class App(ctk.CTk):
         self.sep_value = StringVar(value=",")
         self.seq_value = IntVar(value=0)
         self.uniterm_value = IntVar(value=0)
+        self.uniterm_to_transform = IntVar(value=0)
         self.uniterms = {}
 
         self.options_frame = OptionsFrame(master=self)
@@ -87,17 +88,27 @@ class App(ctk.CTk):
                                                  value=1, width=35)
         self.second_uniterm.pack(side=ctk.RIGHT)
 
+        self.uniterm_to_transform_header = ctk.CTkLabel(master=self.options_frame, text="Uniterm do transformacji")
+        self.uniterm_to_transform_header.pack()
+
+        self.uniterm_to_transform_frame = ctk.CTkFrame(master=self.options_frame, fg_color="transparent")
+        self.uniterm_to_transform_frame.pack(pady=10, side=ctk.TOP)
+
+        self.trans_first_uniterm = ctk.CTkRadioButton(master=self.uniterm_to_transform_frame, text="Lewy", value=0,
+                                                      variable=self.uniterm_to_transform)
+        self.trans_first_uniterm.pack(side=ctk.LEFT)
+        self.trans_sec_uniterm = ctk.CTkRadioButton(master=self.uniterm_to_transform_frame, text="Prawy", value=1,
+                                                    variable=self.uniterm_to_transform, width=35)
+        self.trans_sec_uniterm.pack(side=ctk.RIGHT)
+
         def draw_uniterm(canv: ctk.CTkCanvas, uniterm):
             canv.delete("uniterm")
+            text = canv.create_text(200, 200, text=uniterm, fill="black", font="Arial 14 bold", tags="uniterm")
+            bbox = canv.bbox(text)
             if self.seq_value.get() == 0:
-                text = canv.create_text(200, 200, text=uniterm, fill="black", font="Arial 14 bold", tags="uniterm")
-                bbox = canv.bbox(text)
-                canv.create_arc(bbox[0] - 20, bbox[1] - 30, bbox[2], bbox[3]+10, start=120, extent=120,
+                canv.create_arc(bbox[0] - 20, bbox[1] - 30, bbox[2], bbox[3] + 10, start=120, extent=120,
                                 style="arc", tags="uniterm")
             elif self.seq_value.get() == 1:
-                text = canv.create_text(200, 200, text=uniterm, fill="black", font="Arial 14 bold", tags="uniterm")
-                bbox = canv.bbox(text)
-                print(bbox)
                 canv.create_line((bbox[0] - 10, bbox[1] - 20, bbox[0] - 10, bbox[3]), tags="uniterm")
                 canv.create_line((bbox[0] - 30, bbox[1] - 20, bbox[2], bbox[1] - 20), tags="uniterm")
                 canv.create_line((bbox[0] - 30, bbox[3], bbox[2], bbox[3]), tags="uniterm")
@@ -110,7 +121,6 @@ class App(ctk.CTk):
             seq_method = self.seq_value.get()
             self.uniterms[val] = [first_param, separator, second_param, seq_method]
             uniterm_text = ""
-            print(self.uniterms[val])
             for item in self.uniterms[val][:-1]:
                 uniterm_text = uniterm_text + str(item) + "\n"
             if self.uniterms[val][0] == "" or self.uniterms[val][2] == "":
@@ -120,6 +130,19 @@ class App(ctk.CTk):
                     draw_uniterm(self.left_drawing_frame.canvas, uniterm_text)
                 elif val == 1:
                     draw_uniterm(self.right_drawing_frame.canvas, uniterm_text)
+                final_canv = self.bottom_drawing_frame.canvas
+                if 0 in self.uniterms and 1 in self.uniterms:
+                    if self.uniterm_to_transform.get() == 0:
+                        final_canv.delete("firstuniterm")
+                        final_canv.delete("seconduniterm")
+                        first_uniterm_text = ""
+                        second_uniterm_text = self.uniterms[1][1] + "\n" + self.uniterms[1][2]
+                        for item in self.uniterms[0][:-1]:
+                            first_uniterm_text = first_uniterm_text + str(item) + "\n"
+                        final_canv.create_text(400, 150, text=first_uniterm_text, font="Arial 14 bold",
+                                               tags="firstuniterm")
+                        final_canv.create_text(400, 225, text=second_uniterm_text, font="Arial 14 bold",
+                                               tags="seconduniterm")
 
         self.add_uniterm = ctk.CTkButton(master=self.options_frame, text="Dodaj uniterm",
                                          command=choose_uniterm)
