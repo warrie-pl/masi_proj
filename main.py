@@ -29,6 +29,15 @@ class App(ctk.CTk):
         self.sep_value = StringVar(value=",")
         self.seq_value = IntVar(value=0)
         self.uniterm_value = IntVar(value=0)
+        self.uniterms = {
+            "uniterm_number": 0,
+            "uniterm": {
+                "first_param": "",
+                "separator": "",
+                "second_param": "",
+                "seq_method": ""
+            }
+        }
 
         self.options_frame = OptionsFrame(master=self)
         self.options_frame.grid(row=0, column=0, rowspan=2, sticky=ctk.NS)
@@ -86,23 +95,39 @@ class App(ctk.CTk):
                                                  value=1, width=35)
         self.second_uniterm.pack(side=ctk.RIGHT)
 
-        def draw_uniterm(canv, uniterm):
-            if self.seq_value == 0:
-                pass
-            elif self.seq_value == 1:
-                pass
+        def draw_uniterm(canv: ctk.CTkCanvas, uniterm):
+            canv.delete("uniterm")
+            if self.seq_value.get() == 0:
+                text = canv.create_text(200, 200, text=uniterm, fill="black", font="Arial 14 bold", tags="uniterm")
+                bbox = canv.bbox(text)
+                canv.create_arc(bbox[0]-10, bbox[1]-30, bbox[2]+10, bbox[3]+10, start=120, extent=120, style="arc",
+                                fill="black", tags="uniterm")
+            elif self.seq_value.get() == 1:
+                text = canv.create_text(200, 200, text=uniterm, fill="black", font="Arial 14 bold", tags="uniterm")
+                bbox = canv.bbox(text)
+                canv.create_rectangle((bbox[0]-10, bbox[1], bbox[2], bbox[3]))
 
         def choose_uniterm():
-            uniterm = self.first_param_input.get()+"\n"+self.sep_value.get()+"\n"+self.sec_param_input.get()
-            if self.first_param_input.get() == "" or self.sec_param_input.get() == "":
+            self.uniterms.update({
+                "uniterm_value": self.uniterm_value.get(),
+                "uniterm":
+                {"first_param": self.first_param_input.get(),
+                 "separator": self.sep_value.get(),
+                 "second_param": self.sec_param_input.get(),
+                 "seq_method": self.seq_value.get()}
+            })
+            uniterm_text = ""
+            uniterm_values = list(self.uniterms['uniterm'].values())
+            for item in uniterm_values[:-1]:
+                uniterm_text = uniterm_text+str(item)+"\n"
+            # print(self.uniterm)
+            if self.uniterms['uniterm']['first_param'] == "" or self.uniterms['uniterm']['second_param'] == "":
                 messagebox.showinfo("Uniterm", "Uniterm wymaga dwóch parametrów!")
             else:
-                if self.uniterm_value.get() == 0:
-                    self.left_drawing_frame.canvas.create_text(200, 100, text=uniterm, fill="black",
-                                                               font="Arial 14 bold")
-                elif self.uniterm_value.get() == 1:
-                    self.right_drawing_frame.canvas.create_text(200, 100, text=uniterm, fill="black",
-                                                                font="Arial 14 bold")
+                if self.uniterms['uniterm_value'] == 0:
+                    draw_uniterm(self.left_drawing_frame.canvas, uniterm_text)
+                elif self.uniterms['uniterm_value'] == 1:
+                    draw_uniterm(self.right_drawing_frame.canvas, uniterm_text)
 
         self.add_uniterm = ctk.CTkButton(master=self.options_frame, text="Dodaj uniterm",
                                          command=choose_uniterm)
