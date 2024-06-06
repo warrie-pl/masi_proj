@@ -131,18 +131,27 @@ class App(ctk.CTk):
                 elif val == 1:
                     draw_uniterm(self.right_drawing_frame.canvas, uniterm_text)
                 final_canv = self.bottom_drawing_frame.canvas
+                final_canv.delete("uniterm")
                 if 0 in self.uniterms and 1 in self.uniterms:
                     if self.uniterm_to_transform.get() == 0:
-                        final_canv.delete("firstuniterm")
-                        final_canv.delete("seconduniterm")
                         first_uniterm_text = ""
                         second_uniterm_text = self.uniterms[1][1] + "\n" + self.uniterms[1][2]
                         for item in self.uniterms[0][:-1]:
                             first_uniterm_text = first_uniterm_text + str(item) + "\n"
                         final_canv.create_text(400, 150, text=first_uniterm_text, font="Arial 14 bold",
-                                               tags="firstuniterm")
+                                               tags="uniterm")
                         final_canv.create_text(400, 225, text=second_uniterm_text, font="Arial 14 bold",
-                                               tags="seconduniterm")
+                                               tags="uniterm")
+
+                    elif self.uniterm_to_transform.get() == 1:
+                        first_uniterm_text = self.uniterms[0][2] + "\n" + self.uniterms[0][1]
+                        second_uniterm_text = ""
+                        for item in self.uniterms[1][:-1]:
+                            second_uniterm_text = second_uniterm_text + str(item) + "\n"
+                        final_canv.create_text(400, 125, text=first_uniterm_text, font="Arial 14 bold",
+                                               tags="uniterm")
+                        final_canv.create_text(400, 225, text=second_uniterm_text, font="Arial 14 bold",
+                                               tags="uniterm")
 
         self.add_uniterm = ctk.CTkButton(master=self.options_frame, text="Dodaj uniterm",
                                          command=choose_uniterm)
