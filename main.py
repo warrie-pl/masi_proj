@@ -68,16 +68,6 @@ class App(ctk.CTk):
                                                  width=45)
         self.sec_sep_choice.pack(side=ctk.RIGHT)
 
-        self.seq_frame = ctk.CTkFrame(master=self.options_frame, fg_color="transparent")
-        self.seq_frame.pack(pady=10, side=ctk.TOP)
-
-        self.first_seq_choice = ctk.CTkRadioButton(master=self.seq_frame, text="sekwencjonowanie", value=0,
-                                                   variable=self.seq_value)
-        self.first_seq_choice.pack(side=ctk.LEFT, padx=10)
-        self.sec_seq_choice = ctk.CTkRadioButton(master=self.seq_frame, text="eliminacja", value=1,
-                                                 variable=self.seq_value)
-        self.sec_seq_choice.pack(side=ctk.RIGHT)
-
         self.uniterm_frame = ctk.CTkFrame(master=self.options_frame, fg_color="transparent")
         self.uniterm_frame.pack(pady=10, side=ctk.TOP)
 
@@ -94,69 +84,34 @@ class App(ctk.CTk):
         self.uniterm_to_transform_frame = ctk.CTkFrame(master=self.options_frame, fg_color="transparent")
         self.uniterm_to_transform_frame.pack(pady=10, side=ctk.TOP)
 
-        def transform_uniterm():
-            final_canv = self.bottom_drawing_frame.canvas
-            final_canv.delete("uniterm")
-            if 0 in self.uniterms and 1 in self.uniterms:
-                if self.uniterm_to_transform.get() == 0:
-                    first_uniterm_text = ""
-                    second_uniterm_text = "\n" + self.uniterms[1][1] + "\n" + self.uniterms[1][2]
-                    for item in self.uniterms[0][:-1]:
-                        first_uniterm_text = first_uniterm_text + str(item) + "\n"
-                    final_uniterm_text = first_uniterm_text + second_uniterm_text
-                    final_canv.create_text(400, 200, text=final_uniterm_text, font="Arial 14 bold",
-                                           tags="uniterm")
-                    bbox = final_canv.bbox("uniterm")
-                    final_canv.create_line((bbox[0] - 30, bbox[1] - 20, bbox[0] - 30, bbox[3] + 20), tags="uniterm")
-                    final_canv.create_line((bbox[0] - 50, bbox[1] - 20, bbox[2] + 15, bbox[1] - 20), tags="uniterm")
-                    final_canv.create_line((bbox[0] - 50, bbox[3] + 20, bbox[2] + 15, bbox[3] + 20), tags="uniterm")
-                    final_canv.create_arc((bbox[0] - 15, bbox[1] - 15, bbox[2], bbox[3] - 45), start=120, extent=120,
-                                          style="arc", tags="uniterm")
-
-                elif self.uniterm_to_transform.get() == 1:
-                    first_uniterm_text = self.uniterms[0][0] + "\n" + self.uniterms[0][1] + "\n"
-                    second_uniterm_text = "\n"
-                    for item in self.uniterms[1][:-1]:
-                        second_uniterm_text = second_uniterm_text + str(item) + "\n"
-                    final_uniterm_text = first_uniterm_text + second_uniterm_text.rstrip()
-                    final_canv.create_text(400, 200, text=final_uniterm_text, font="Arial 14 bold",
-                                           tags="uniterm")
-                    bbox = final_canv.bbox("uniterm")
-                    final_canv.create_line((bbox[0] - 30, bbox[1] - 20, bbox[0] - 30, bbox[3] + 20), tags="uniterm")
-                    final_canv.create_line((bbox[0] - 50, bbox[1] - 20, bbox[2] + 15, bbox[1] - 20), tags="uniterm")
-                    final_canv.create_line((bbox[0] - 50, bbox[3] + 20, bbox[2] + 15, bbox[3] + 20), tags="uniterm")
-                    final_canv.create_arc((bbox[0] - 15, bbox[3] - 75, bbox[2] + 15, bbox[3] + 10), start=120,
-                                          extent=120, style="arc", tags="uniterm")
-
         self.trans_first_uniterm = ctk.CTkRadioButton(master=self.uniterm_to_transform_frame, text="Lewy", value=0,
-                                                      variable=self.uniterm_to_transform, command=transform_uniterm)
+                                                      variable=self.uniterm_to_transform)
         self.trans_first_uniterm.pack(side=ctk.LEFT)
         self.trans_sec_uniterm = ctk.CTkRadioButton(master=self.uniterm_to_transform_frame, text="Prawy", value=1,
-                                                    variable=self.uniterm_to_transform, command=transform_uniterm,
-                                                    width=35)
+                                                    variable=self.uniterm_to_transform, width=35)
         self.trans_sec_uniterm.pack(side=ctk.RIGHT)
 
         def draw_uniterm(canv: ctk.CTkCanvas, uniterm):
             canv.delete("uniterm")
             text = canv.create_text(200, 200, text=uniterm, fill="black", font="Arial 14 bold", tags="uniterm")
             bbox = canv.bbox(text)
-            if self.seq_value.get() == 0:
+            if self.uniterm_value.get() == 0:
                 canv.create_arc(bbox[0] - 20, bbox[1] - 30, bbox[2], bbox[3] + 10, start=120, extent=120,
                                 style="arc", tags="uniterm")
-            elif self.seq_value.get() == 1:
+            elif self.uniterm_value.get() == 1:
                 canv.create_line((bbox[0] - 10, bbox[1] - 20, bbox[0] - 10, bbox[3]), tags="uniterm")
                 canv.create_line((bbox[0] - 30, bbox[1] - 20, bbox[2], bbox[1] - 20), tags="uniterm")
                 canv.create_line((bbox[0] - 30, bbox[3], bbox[2], bbox[3]), tags="uniterm")
+
 
         def choose_uniterm():
             val = self.uniterm_value.get()
             first_param = self.first_param_input.get()
             separator = self.sep_value.get()
             second_param = self.sec_param_input.get()
-            seq_method = self.seq_value.get()
-            self.uniterms[val] = [first_param, separator, second_param, seq_method]
+            self.uniterms[val] = [first_param, separator, second_param]
             uniterm_text = ""
-            for item in self.uniterms[val][:-1]:
+            for item in self.uniterms[val]:
                 uniterm_text = uniterm_text + str(item) + "\n"
             if self.uniterms[val][0] == "" or self.uniterms[val][2] == "":
                 messagebox.showinfo("Uniterm", "Uniterm wymaga dwóch parametrów!")
@@ -165,6 +120,42 @@ class App(ctk.CTk):
                     draw_uniterm(self.left_drawing_frame.canvas, uniterm_text)
                 elif val == 1:
                     draw_uniterm(self.right_drawing_frame.canvas, uniterm_text)
+                final_canv = self.bottom_drawing_frame.canvas
+                final_canv.delete("uniterm")
+                if 0 in self.uniterms and 1 in self.uniterms:
+                    if self.uniterm_to_transform.get() == 0:
+                        first_uniterm_text = ""
+                        second_uniterm_text = "\n" + self.uniterms[0][1] + "\n" + self.uniterms[0][2]
+                        for item in self.uniterms[1]:
+                            first_uniterm_text = first_uniterm_text + str(item) + "\n"
+                        final_uniterm_text = first_uniterm_text + second_uniterm_text
+                        final_canv.create_text(400, 200, text=final_uniterm_text, font="Arial 14 bold",
+                                               tags="uniterm")
+                        bbox = final_canv.bbox("uniterm")
+                        final_canv.create_arc(bbox[0]-40, bbox[1]-20, bbox[2], bbox[3]+20, start=120, extent=120,
+                                              style="arc", tags="uniterm")
+                        final_canv.create_line((bbox[0] - 10, bbox[1] - 5, bbox[0] - 10, bbox[3] - 60), tags="uniterm")
+                        final_canv.create_line((bbox[0] - 20, bbox[1] - 5, bbox[2] + 5, bbox[1] - 5), tags="uniterm")
+                        final_canv.create_line((bbox[0] - 20, bbox[3] - 60, bbox[2] + 5, bbox[3] - 60), tags="uniterm")
+
+                        print("Left uniterm: ", final_canv.bbox("uniterm"))
+
+                    elif self.uniterm_to_transform.get() == 1:
+                        first_uniterm_text = self.uniterms[0][0] + "\n" + self.uniterms[0][1] + "\n"
+                        second_uniterm_text = "\n"
+                        for item in self.uniterms[1]:
+                            second_uniterm_text = second_uniterm_text + str(item) + "\n"
+                        final_uniterm_text = first_uniterm_text + second_uniterm_text.rstrip()
+                        final_canv.create_text(400, 200, text=final_uniterm_text, font="Arial 14 bold",
+                                               tags="uniterm")
+                        bbox = final_canv.bbox("uniterm")
+                        final_canv.create_arc(bbox[0]-40, bbox[1]-20, bbox[2], bbox[3]+20, start=120, extent=120,
+                                              style="arc", tags="uniterm")
+                        final_canv.create_line((bbox[0] - 10, bbox[1]+60, bbox[0] - 10, bbox[3]+10), tags="uniterm")
+                        final_canv.create_line((bbox[0] - 20, bbox[1]+60, bbox[2]+5, bbox[1]+60), tags="uniterm")
+                        final_canv.create_line((bbox[0] - 20, bbox[3]+10, bbox[2]+5, bbox[3]+10), tags="uniterm")
+
+                        print("Right uniterm: ", final_canv.bbox("uniterm"))
 
         self.add_uniterm = ctk.CTkButton(master=self.options_frame, text="Dodaj uniterm",
                                          command=choose_uniterm)
